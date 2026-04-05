@@ -1,2 +1,3 @@
 supervisor/node_modules/
 supervisor/web/node_modules/
+.worktrees/
