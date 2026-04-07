@@ -5,7 +5,7 @@
 ### Overall status
 - The repository now has a meaningful supervisor MVP baseline with real persistence, replay, deterministic decision-service logic, and early operator-surface structure, but operator-facing maturity still trails backend/runtime strength and the project remains in transition from milestone-grade implementation to dependable internal system use.
 - Backend verification is the strongest current signal in this execution worktree: `npm --prefix supervisor test` passed with 9 test files and 40 tests, and `npm --prefix supervisor run typecheck` passed.
-- The broader quality posture is still mixed because the published README commands stop at `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, while this report uses a stricter audit regression baseline that also checks backend typecheck and web build; under that broader audit baseline, the current worktree still has open web verification failures (`jsdom` missing for the web test environment and missing `supervisor/web/index.html` for the Vite build).
+- broader quality posture is still mixed because the README-published commands stop at `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, while this report uses a stricter audit regression baseline that also checks backend typecheck and web build; under that stricter audit baseline, the current worktree still has open web verification failures (`jsdom` missing for the web test environment and missing `supervisor/web/index.html` for the Vite build).
 - Management implication: treat the project as an actively governed internal build, not a release-ready product.
 
 ### What is complete
@@ -23,7 +23,7 @@
 - Formal expansion work beyond the current critical path should also be treated as not started for planning purposes until the operator-facing read path and verification baseline are stabilized.
 
 ### What must happen next
-- Keep Stage 0 and Stage 1 priorities intact: restore the truthful web verification baseline, keep operator-facing data paths authoritative, and avoid claiming stable internal usability until the broader audit regression baseline used in this report is genuinely repeatable.
+- Keep the Stage 0 convergence prerequisite and Stage 1 priorities intact: finish the immediate baseline-convergence work first, then restore the truthful web verification baseline, keep operator-facing data paths authoritative, and avoid claiming stable internal usability until the broader audit regression baseline used in this report is genuinely repeatable.
 - Use role-based ownership and lightweight weekly reviews to decide whether each stage is ready to advance, whether blockers require scope restraint, and whether collaborator help is needed on UI verification, regression hardening, or documentation alignment.
 - Treat the acceptance framework below as the management control layer: no stage should be called complete unless implementation evidence, verification evidence, and documented limitations all agree.
 
