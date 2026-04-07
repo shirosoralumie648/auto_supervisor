@@ -358,3 +358,10 @@ This assessment is grounded in:
 - acceptance discipline:
   - if a command in the published gate fails, the report should carry that failure forward as a present constraint rather than converting it into a silent assumption
   - if a milestone depends on manual supervision judgment, that boundary should remain explicit until the system evidence shows a tighter automated acceptance basis
+
+## How to use this document
+
+- Use the executive summary for stakeholder alignment.
+- Use the milestone and module sections to decide what is actually done.
+- Use the staged roadmap to prioritize the next 12 weeks of work.
+- Use the governance section during weekly reviews and stage-gate decisions.
