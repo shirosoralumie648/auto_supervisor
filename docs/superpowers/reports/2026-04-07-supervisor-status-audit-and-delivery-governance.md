@@ -148,3 +148,100 @@ This assessment is grounded in:
 - capability: Delivery-governance confidence
   - depends on: Backend and web verification gates staying green, plus removal of placeholder API/dashboard behavior that currently weakens the signal
   - unlocks: Stronger stage-gate decisions, more accurate executive reporting, and safer dependence on milestone completion claims
+
+## 2–3 month delivery roadmap
+
+### Stage 0 — Current-state convergence (2026-04-07 to 2026-04-13, Week 1)
+- objective: Re-establish a truthful baseline that matches the current milestone-grade repository state and removes ambiguity from the next execution slice.
+- scope:
+  - confirm the current README-limited MVP framing remains accurate for runtime, API, CLI, and web surfaces
+  - stabilize the immediate blocker chain around event contracts, projection-backed reads, and placeholder operator surfaces
+  - turn the already identified blocker list into a short executable backlog for the next stage without adding post-M4 expansion scope
+- target outcomes:
+  - a locked baseline stating that the durable event path and narrow orchestration trigger are real, while API and dashboard authority still lag behind
+  - a prioritized P0 sequence that starts with hardened event vocabulary and projection-backed read paths rather than new feature breadth
+  - fresh confirmation of the current UI baseline, including the current web-build failure caused by missing `index.html` in `supervisor/web`
+- recommended sequencing:
+  - first, fix the web build baseline so UI verification is trustworthy again
+  - second, harden the event/domain contract used by storage, replay, and orchestration
+  - third, connect API routes to authoritative projection-backed providers
+  - fourth, only then start replacing stubbed CLI and web read paths with those provider-backed responses
+- risks:
+  - fixing UI or dashboard pages before API authority is established can lock in more placeholder contracts
+  - leaving the web build broken weakens every later stage gate that depends on dashboard delivery evidence
+  - broadening scope during convergence can blur the distinction between milestone cleanup and later governance work
+- exit criteria:
+  - web build passes again from the current repo baseline
+  - the next-stage backlog is explicitly anchored to the blocker chain already documented in this report
+  - event-contract hardening and projection-backed API integration are confirmed as the first critical-path items
+
+### Stage 1 — From milestone-grade to stable internal usability (2026-04-14 to 2026-05-04, Weeks 2–4)
+- objective: Move the system from demonstrable milestone scaffolding to repeatable internal operator use across the core read surfaces.
+- scope:
+  - complete projection-backed API reads for overview, session detail, stage, and review surfaces
+  - replace stubbed dashboard and CLI reads that still depend on injected arrays, sample sessions, or placeholder client responses
+  - expand session and stage projections enough that operator-visible pages reflect real runtime and supervision state instead of isolated samples
+- target outcomes:
+  - overview, session detail, and roadmap views consume live API data derived from replayed supervisor state
+  - CLI output is backed by authoritative supervisor reads instead of minimal formatting seams alone
+  - internal users can inspect real sessions and stage status without relying on hard-coded examples
+- recommended sequencing:
+  - complete replay and provider coverage needed by the API first
+  - land API integration before dashboard page rewiring so the UI targets stable responses
+  - update CLI and dashboard clients in parallel once those response contracts hold steady
+  - finish with focused regression checks across backend tests, typecheck, web tests, and web build
+- risks:
+  - projection breadth may still be too narrow to satisfy all operator pages, especially around review, approval, and stage state
+  - UI work can appear complete while still reflecting partial read models if API contracts outpace projection completeness
+  - a single-owner path may slow concurrent CLI and dashboard cleanup unless a second contributor handles one surface independently
+- exit criteria:
+  - API routes are authoritative projection-backed reads rather than injected arrays
+  - dashboard overview and session-detail paths no longer depend on sample or stub data
+  - verification evidence covers backend tests, typecheck, web tests, and web build for the internally usable baseline
+
+### Stage 2 — Complete the critical path to fully usable (2026-05-05 to 2026-06-01, Weeks 5–8)
+- objective: Close the most important end-to-end supervision gaps so the repo supports a genuinely usable runtime-to-operator critical path.
+- scope:
+  - persist and project review, approval, progress, and stage-decision outcomes into the same auditable event/replay path
+  - broaden orchestration beyond idle-triggered progress requests so the decision loop reflects the intended supervision workflow
+  - finish roadmap and detail surfaces so operator pages expose actionable state, blockers, and evidence instead of partial milestone shells
+- target outcomes:
+  - supervision decisions are recorded, replayed, and visible through the API and dashboard
+  - the critical path from runtime event to decision to operator-visible read surface is complete for the main supervision loop
+  - milestone claims for M2 and M3 can be upgraded based on integrated behavior rather than isolated service logic
+- recommended sequencing:
+  - first persist decision outcomes and projection support for review/approval/stage state
+  - second wire orchestration to emit and consume those broader decisions
+  - third finish dashboard and CLI surfaces that display the new state coherently
+  - fourth run full regression gates and use any failures to trim remaining critical-path gaps before expansion work
+- risks:
+  - decision services may expose policy gaps once they must operate on persisted state rather than local deterministic inputs alone
+  - orchestration expansion can create unclear ownership boundaries between reducers, policies, and action triggers if contracts remain loose
+  - trying to finish lower-priority polish before the auditable decision loop is real could delay the only path that upgrades the project from scaffold to usable system
+- exit criteria:
+  - review, approval, progress, and stage decisions are persisted and replayed through the authoritative read path
+  - the main operator surfaces show those decisions with no placeholder-first dependency
+  - the critical runtime, API, CLI, and dashboard loop is usable end to end under the current MVP limitations
+
+### Stage 3 — Quality, governance, and expansion readiness (2026-06-02 to 2026-06-29, Weeks 9–12)
+- objective: Harden the now-usable critical path so it can support reliable iteration, clearer stage-gate decisions, and carefully scoped follow-on work.
+- scope:
+  - tighten verification discipline, release evidence, and documentation so milestone and module claims stay aligned with observed behavior
+  - address maintainability gaps in typing, boundaries, and test depth that still make the delivered path an unstable dependency
+  - prepare safe expansion seams for additional operator workflows only after the core path is already dependable
+- target outcomes:
+  - M4-style readiness is supported by full-gate evidence rather than backend-only or scaffold-friendly signals
+  - the report’s blocker chains are either resolved or reduced to explicit non-critical follow-up items
+  - future work can branch from a stable internal product baseline instead of re-litigating milestone completeness
+- recommended sequencing:
+  - start with regression-gate hardening and documentation updates tied to the delivered critical path
+  - then improve maintainability hotspots in event typing, projection coverage, and boundary tests
+  - only after those controls are in place, schedule non-blocking expansion or UX polish items
+- risks:
+  - quality work is easy to defer once the critical path functions, which would recreate the current gap between milestone completion and stable dependency status
+  - adding expansion scope too early can dilute verification effort and reintroduce false-completion reporting
+  - governance improvements can become overly process-heavy if they are not kept lightweight for the current mostly single-owner execution model
+- exit criteria:
+  - full verification gates are repeatable and green for the real delivered path
+  - module and milestone reporting can describe the system as stable for internal use without contradicting README limitations
+  - remaining work is primarily enhancement or expansion, not unresolved critical-path blockers
