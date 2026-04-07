@@ -1,8 +1,28 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { makeEvent } from "../domain/events";
 import { createInMemoryDatabase } from "../db/sqlite";
 import { migrate } from "../db/migrate";
 import { createEventStore } from "./event-store";
+
+describe("makeEvent", () => {
+  it("creates normalized M1 runtime events", () => {
+    const started = makeEvent("session.started", {
+      sessionId: "session-1",
+      agentType: "claude-code",
+      adapterType: "terminal"
+    });
+    const idle = makeEvent("session.idle", { sessionId: "session-1" });
+    const progressRequested = makeEvent("agent.progress.requested", {
+      sessionId: "session-1"
+    });
+
+    expect(started.type).toBe("session.started");
+    expect(idle.type).toBe("session.idle");
+    expect(progressRequested.type).toBe("agent.progress.requested");
+    expect(started.sequence).toBe(0);
+  });
+});
 
 describe("createEventStore", () => {
   const databases: Array<{ close: () => void }> = [];

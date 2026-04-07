@@ -1,5 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
-export function registerStagesRoute(app: FastifyInstance, stages: unknown[]) {
-  app.get("/stages", async () => stages);
+export function registerStagesRoute(
+  app: FastifyInstance,
+  getStages: () => unknown[]
+) {
+  app.get("/stages", async () => getStages());
 }

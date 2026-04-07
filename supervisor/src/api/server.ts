@@ -5,17 +5,18 @@ import { registerSessionsRoute } from "./routes/sessions";
 import { registerStagesRoute } from "./routes/stages";
 
 export type ServerData = {
-  sessions: unknown[];
-  stages: unknown[];
-  reviews: unknown[];
+  getSessions: () => unknown[];
+  getSessionDetail: (sessionId: string) => unknown;
+  getStages: () => unknown[];
+  getReviews: () => unknown[];
 };
 
 export function buildServer(data: ServerData) {
   const app = Fastify();
 
-  registerSessionsRoute(app, data.sessions);
-  registerStagesRoute(app, data.stages);
-  registerReviewsRoute(app, data.reviews);
+  registerSessionsRoute(app, data.getSessions, data.getSessionDetail);
+  registerStagesRoute(app, data.getStages);
+  registerReviewsRoute(app, data.getReviews);
 
   return app;
 }

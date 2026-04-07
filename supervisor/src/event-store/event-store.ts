@@ -2,13 +2,13 @@ import type { SupervisorEvent } from "../domain/events";
 import type { SqliteDatabase } from "../db/sqlite";
 
 type EventInput = {
-  type: string;
+  type: SupervisorEvent["type"];
   payload: Record<string, unknown>;
 };
 
 type EventRow = {
   sequence: number;
-  type: string;
+  type: SupervisorEvent["type"];
   occurred_at: string;
   payload_json: string;
 };
@@ -42,14 +42,12 @@ export function createEventStore(db: SqliteDatabase) {
     readAll(): SupervisorEvent[] {
       const eventRows = readEvents.all() as EventRow[];
 
-      return eventRows.map((eventRow) => {
-        return {
-          sequence: eventRow.sequence,
-          type: eventRow.type,
-          occurredAt: eventRow.occurred_at,
-          payload: JSON.parse(eventRow.payload_json) as Record<string, unknown>
-        };
-      });
+      return eventRows.map((eventRow) => ({
+        sequence: eventRow.sequence,
+        type: eventRow.type,
+        occurredAt: eventRow.occurred_at,
+        payload: JSON.parse(eventRow.payload_json) as Record<string, unknown>
+      }));
     }
   };
 }
