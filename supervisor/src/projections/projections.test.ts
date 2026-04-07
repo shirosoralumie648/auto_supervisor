@@ -3,29 +3,36 @@ import { describe, expect, it } from "vitest";
 import { replayEvents } from "./replay";
 
 describe("replayEvents", () => {
-  it("marks a started session as idle after replaying session.idle", () => {
+  it("rebuilds session runtime state from persisted events", () => {
     const state = replayEvents([
       {
         sequence: 1,
         type: "session.started",
         occurredAt: "2026-04-05T00:00:00.000Z",
         payload: {
-          sessionId: "s1",
-          agentType: "opencode",
-          adapterType: "acp"
+          sessionId: "session-1",
+          agentType: "claude-code",
+          adapterType: "terminal"
         }
       },
       {
         sequence: 2,
         type: "session.idle",
         occurredAt: "2026-04-05T00:00:30.000Z",
-        payload: {
-          sessionId: "s1"
-        }
+        payload: { sessionId: "session-1" }
       }
     ]);
 
-    expect(state.sessions["s1"]?.status).toBe("idle");
+    expect(state.sessions["session-1"]).toEqual({
+      sessionId: "session-1",
+      agentType: "claude-code",
+      adapterType: "terminal",
+      status: "idle",
+      currentTask: null,
+      lastEventAt: "2026-04-05T00:00:30.000Z",
+      lastKnownSpec: null,
+      lastKnownStage: null
+    });
   });
 
   it("tracks the latest artifact update and review by path", () => {

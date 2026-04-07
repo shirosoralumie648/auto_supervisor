@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { shouldTriggerIdleReconcile } from "../../orchestrator/debounce";
-import { buildTerminalCommand } from "./terminal-adapter";
+import { buildTerminalCommand, normalizeTerminalEvent } from "./terminal-adapter";
 
 describe("terminal adapter helpers", () => {
   it("returns normalized command for claude-code", () => {
@@ -11,6 +11,18 @@ describe("terminal adapter helpers", () => {
       "json",
       "--no-color"
     ]);
+  });
+
+  it("normalizes idle lifecycle events for claude-code", () => {
+    expect(
+      normalizeTerminalEvent("claude-code", {
+        type: "session.idle",
+        sessionId: "session-1"
+      })
+    ).toEqual({
+      type: "session.idle",
+      payload: { sessionId: "session-1" }
+    });
   });
 
   it("returns normalized command for codex", () => {

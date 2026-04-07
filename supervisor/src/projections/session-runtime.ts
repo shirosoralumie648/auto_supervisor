@@ -45,5 +45,15 @@ export function reduceSessionRuntime(
     }
   }
 
+  if (event.type === "session.stopped") {
+    const sessionId = String(event.payload.sessionId);
+    const session = state[sessionId];
+
+    if (session) {
+      session.status = "stopped";
+      session.lastEventAt = event.occurredAt;
+    }
+  }
+
   return state;
 }
