@@ -5,7 +5,7 @@
 ### Overall status
 - The repository now has a meaningful supervisor MVP baseline with real persistence, replay, deterministic decision-service logic, and early operator-surface structure, but operator-facing maturity still trails backend/runtime strength and the project remains in transition from milestone-grade implementation to dependable internal system use.
 - Backend verification is the strongest current signal in this execution worktree: `npm --prefix supervisor test` passed with 9 test files and 40 tests, and `npm --prefix supervisor run typecheck` passed.
-- broader quality posture is still mixed because the README-published commands stop at `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, while this report uses a stricter audit regression baseline that also checks backend typecheck and web build; under that stricter audit baseline, the current worktree still has open web verification failures (`jsdom` missing for the web test environment and missing `supervisor/web/index.html` for the Vite build).
+- The broader quality posture is still mixed because the README-published commands stop at `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, while this report uses a stricter audit regression baseline that also checks backend typecheck and web build; under that stricter audit baseline, the current worktree still has open web verification failures (`jsdom` missing for the web test environment and missing `supervisor/web/index.html` for the Vite build).
 - Management implication: treat the project as an actively governed internal build, not a release-ready product.
 
 ### What is complete
