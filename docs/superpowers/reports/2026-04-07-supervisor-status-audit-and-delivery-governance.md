@@ -83,64 +83,68 @@ This assessment is grounded in:
   - Remove placeholder UI/API behavior that would make a passing test suite a misleading readiness signal.
   - Align milestone completion claims with the README’s MVP framing and current operator-surface limitations.
 
-## Module maturity and dependency readiness
+## Module maturity matrix
 
-### Event ingestion and runtime reconstruction
-- Current status: Implemented but not yet a stable dependency.
-- Evidence:
-  - `supervisor/src/projections/roadmap-status.ts` derives roadmap completion by grouping session records and reducing review/stage counts, which shows a working read-model layer but one based on pre-shaped session inputs rather than replayed store state.
-  - `supervisor/src/api/routes/stages.ts` and `supervisor/src/api/routes/reviews.ts` each return the arrays passed into route registration directly, so stage and review reads exist but are still provider-injected snapshots instead of runtime-backed reconstruction.
-  - `supervisor/web/src/components/EventTimeline.tsx` currently renders only static text (`Event timeline`), and `supervisor/web/src/pages/SessionDetailPage.tsx` mounts that placeholder without fetching or replaying event history.
-- Dependency implications:
-  - Downstream dashboard and operator workflows can depend on the existence of stage/review/session shapes, but not yet on audited event-history fidelity or deterministic runtime reconstruction from source events.
-  - Any later governance or analytics work that assumes replay-backed history would be premature until route providers and the session detail path read real reconstructed timelines.
-- Priority: P0.
+| Module | Status | Quality | Priority | Key dependencies | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Event and domain model | In progress | `supervisor/src/domain/events.ts` still uses generic `type: string` and `payload: Record<string, unknown>` events, which keeps the core contract flexible but not yet hardened as a stable domain vocabulary. | P0 | Session runtime reducer, event store append/read path, orchestrator event handling | Task 2 evidence still applies here: the event path is real, but later modules still depend on stringly typed events rather than a frozen milestone vocabulary. |
+| Storage and database | Implemented but not yet a stable dependency | `supervisor/src/event-store/event-store.ts` persists ordered events in SQLite and rehydrates them into `SupervisorEvent` records, which is meaningful durable storage, but it still stores generic event payload JSON without stronger schema enforcement at the boundary. | P0 | Database schema, event/domain model, replay pipeline | This is one of the stronger foundations in the repo, but its long-term safety still depends on hardening the event contract used by append and replay. |
+| Projection and state rebuild | In progress | `supervisor/src/projections/replay.ts` composes session, artifact, and stage reducers, but `supervisor/src/projections/session-runtime.ts` still rebuilds only the `session.started` and `session.idle` path, so replay breadth remains partial. | P0 | Event store reads, event/domain model, reducer coverage for sessions/artifacts/stages | Projection composition exists, but the current runtime rebuild is too narrow to treat as complete state reconstruction for operator-facing workflows. |
+| Adapters and runtime ingress | Implemented but not yet a stable dependency | `supervisor/src/adapters/terminal/terminal-adapter.ts` provides concrete command construction for `claude-code` and `codex`, proving a real ingress seam, but it is only command assembly and not a fully exercised runtime adapter flow in the inspected report scope. | P1 | Agent type vocabulary, orchestrator/runtime session flow, CLI or process launch path | This is usable as a narrow primitive, but the report should not overstate it as a full adapter/runtime integration layer. |
+| Supervision decision services | Implemented but not yet a stable dependency | `supervisor/src/services/spec-review-service.ts`, `approval-policy-service.ts`, `progress-reconciler.ts`, and `stage-completion-judge.ts` contain real deterministic decision logic, but the policies remain narrow and are not yet shown as persisted, operator-auditable decisions across the full runtime path. | P0 | Review inputs, artifact completeness, stage evidence, orchestration hooks | Existing Task 3 evidence remains relevant: the decision primitives are real code, but they still look like milestone-grade policy scaffolding rather than final governance authority. |
+| Orchestration | In progress | `supervisor/src/orchestrator/orchestrator.ts` reacts to `session.idle` by emitting `agent.progress.requested`, which proves one event-driven supervision action exists, but the orchestration loop remains much narrower than the broader decision lifecycle described in design artifacts. | P0 | Event/domain model, projection/runtime state, decision services | Safe to depend on for the current idle-trigger path only; broader review, approval, and escalation orchestration is not yet demonstrated here. |
+| API read layer | In progress | `supervisor/src/api/server.ts` still builds the Fastify server around injected `sessions`, `stages`, and `reviews` arrays, so the read layer exists structurally but is not yet shown as authoritative projection-backed reads in this worktree report scope. | P0 | Projection/state rebuild, stored supervisor data, route providers | This remains a key blocker for making downstream CLI and dashboard surfaces trustworthy. |
+| CLI layer | In progress | `supervisor/src/cli/main.ts` currently exposes only `formatSessions` through `createCli()`, which is a usable shell for formatting but not yet a richer operator-ready command surface. | P1 | API read layer or projection data providers, session formatting commands | The CLI exists as a minimal interface seam, but the report should treat it as early-stage internal tooling rather than a mature control surface. |
+| Web dashboard | In progress | `supervisor/web/src/api/client.ts` still returns stubbed overview/session/roadmap data, while `supervisor/web/src/pages/OverviewPage.tsx`, `SessionDetailPage.tsx`, and `RoadmapStatusPage.tsx` primarily mount sample or placeholder views validated by `supervisor/web/src/dashboard.test.tsx`. | P0 | API read layer, session/detail/roadmap components, verification gates | Preserve the already gathered evidence: the inspected dashboard path is test-covered as a scaffold, but it is not yet a live operator surface. |
+| Verification and delivery governance | In progress | The report already preserves fresh verification evidence that `npm --prefix supervisor test` passed, and prior Task 3 evidence captured `npm --prefix supervisor run typecheck`, `npm --prefix supervisor/web test -- --environment jsdom`, and `npm --prefix supervisor/web run build` status for this worktree; however, those signals still sit beside placeholder API/dashboard behavior, so they are not sufficient by themselves as delivery governance proof. | P0 | Backend tests, typecheck, web test/build gate, truthful milestone/module reporting | Keep using the gathered verification evidence, but scope claims to quality signals and governance readiness rather than product completeness. |
 
-### Supervision decision services
-- Current status: Implemented but not yet a stable dependency.
-- Evidence:
-  - `supervisor/src/services/spec-review-service.ts` maps numeric score/findings input to `pass`/`revise`/`block`, but the logic is a compact threshold function with no external policy source or repository-backed review persistence.
-  - `supervisor/src/services/approval-policy-service.ts` converts review decision, document confidence, and artifact completeness into `block`/`revise`/`needs_human`/`pass`, which is real decision code but still policy-light and deterministic only over narrow inputs.
-  - `supervisor/src/services/progress-reconciler.ts` reduces progress reconciliation to `claimedCompletedStages.includes(requiredStageId)`, and `supervisor/src/services/stage-completion-judge.ts` marks a stage completed only when criteria are met and evidence count is positive.
-- Dependency implications:
-  - These services are usable as decision primitives for milestone-grade flows, but later orchestration or governance logic should treat them as policy scaffolds rather than stable domain authorities.
-  - Richer delivery controls will need persisted evidence, broader criteria, and integration with real session/review state before they can safely gate automation.
-- Priority: P0.
+## Dependency and blocker analysis
 
-### Spec/review document handling
-- Current status: In progress.
-- Evidence:
-  - `supervisor/src/documents/review-spec.ts` defines the review document contract and normalizes review decisions/summaries, so document shape handling exists in code.
-  - The document layer inspected for this task is schema-centric; there is no evidence in the inspected routes or pages that review specs are persisted, versioned, or surfaced end-to-end through API and dashboard paths.
-  - `supervisor/src/api/routes/reviews.ts` still exposes raw injected review arrays, which means document handling is not yet coupled to a durable review-document workflow.
-- Dependency implications:
-  - Other modules can depend on a typed review-document shape, but not yet on stable document lifecycle behavior such as storage, retrieval provenance, or operator-visible revision history.
-  - Approval/governance work that assumes review artifacts are authoritative needs more plumbing before those artifacts can anchor stage or release decisions.
-- Priority: P1.
+### Current blockers
+- blocker: Generic event contract remains too loose for authoritative downstream state.
+  - affected modules: Event and domain model; Storage and database; Projection and state rebuild; Orchestration
+  - impact: Replay, storage, and orchestration all depend on `type: string` plus untyped payload maps, which makes later module contracts harder to lock down and weakens confidence in durable event semantics.
+  - suggested resolution: Replace the generic event surface in `supervisor/src/domain/events.ts` with the milestone vocabulary and payload shapes the rest of the runtime already assumes, then update append/replay/orchestration callers to use that contract.
+- blocker: Projection-backed read paths are not the authority for operator-facing surfaces.
+  - affected modules: Projection and state rebuild; API read layer; CLI layer; Web dashboard
+  - impact: `supervisor/src/api/server.ts` and related routes still rely on injected arrays, so operator surfaces cannot yet claim fresh, replayed supervisor state as their data source.
+  - suggested resolution: Route API reads through replay/projection providers derived from the event store, then make CLI and web clients consume those provider-backed responses.
+- blocker: Dashboard surfaces are still scaffolded around stub data and placeholder components.
+  - affected modules: Web dashboard; API read layer; Verification and delivery governance
+  - impact: `supervisor/web/src/api/client.ts` returns stub data, `OverviewPage.tsx` shows a sample session, and the detail/roadmap pages are still placeholder-first, so UI verification cannot be treated as proof of real internal usability.
+  - suggested resolution: Replace stub client responses and placeholder page content with live API-backed overview, session-detail, and roadmap reads before using dashboard evidence in delivery-governance claims.
+- blocker: Decision services are not yet fully anchored to persisted, auditable workflow state.
+  - affected modules: Supervision decision services; Orchestration; Verification and delivery governance
+  - impact: Review, approval, progress, and stage decisions exist as local deterministic functions, but the report scope does not show them as persisted decisions with end-to-end operator visibility, limiting their usefulness as governance controls.
+  - suggested resolution: Persist decision outcomes into the event/review flow and surface them through replayed read models so governance can rely on recorded evidence instead of isolated function results.
 
-### API read surfaces
-- Current status: In progress.
-- Evidence:
-  - `supervisor/src/api/routes/stages.ts` and `supervisor/src/api/routes/reviews.ts` expose real Fastify GET routes, proving the read-surface skeleton exists.
-  - Both routes simply return arrays supplied at registration time, so the API layer is not yet independently reconstructing or querying authoritative supervisor state.
-  - `supervisor/src/projections/roadmap-status.ts` provides a projection helper the API layer could use, but the inspected route files do not show that projection connected to route-level providers here.
-- Dependency implications:
-  - Frontend work can integrate against stable route names and broad payload categories, but should not assume those endpoints yet guarantee freshness, provenance, or full domain coverage.
-  - Governance/reporting features will remain shallow until API routes are backed by durable projections rather than injected snapshots.
-- Priority: P0.
+### Safe parallelization boundaries
+- workstream: Event-contract hardening and replay expansion
+  - can proceed in parallel with: Dashboard rendering improvements once API contracts are kept stable; CLI ergonomics work that does not change core event semantics
+  - cannot proceed before: None for initial contract design, but projection/API consumers cannot fully finalize against it until the hardened event vocabulary lands
+- workstream: API provider integration
+  - can proceed in parallel with: CLI layer improvements; dashboard component rendering work using stable response contracts
+  - cannot proceed before: A usable projection/state source exists from stored events and reducers
+- workstream: Dashboard page implementation
+  - can proceed in parallel with: Decision-service hardening and CLI layer work
+  - cannot proceed before: API read layer exposes authoritative overview, session detail, and roadmap data instead of injected arrays or stubs
+- workstream: Decision-service policy expansion
+  - can proceed in parallel with: Dashboard shell work; adapter/runtime ingress hardening
+  - cannot proceed before: Persisted workflow inputs and evidence paths are defined well enough for decisions to be recorded and surfaced coherently
+- workstream: Verification and governance tightening
+  - can proceed in parallel with: Most implementation work as a reporting and gate-definition track
+  - cannot proceed before: The underlying API/dashboard/runtime claims are real enough that verification evidence measures delivered behavior rather than scaffold health
 
-### Dashboard rendering path
-- Current status: In progress.
-- Evidence:
-  - `supervisor/web/src/pages/RoadmapStatusPage.tsx` and `supervisor/web/src/pages/SessionDetailPage.tsx` provide page shells for roadmap and session detail views.
-  - `supervisor/web/src/components/StageAssessmentPanel.tsx` and `supervisor/web/src/components/EventTimeline.tsx` are still placeholders that render only section labels, so the page path exists but not the underlying operator-visible content.
-  - Fresh verification evidence is mixed: `npm --prefix supervisor run typecheck` passed, but `npm --prefix supervisor/web test -- --environment jsdom` failed because `jsdom` is missing from `/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90/supervisor/web/package.json`, and `npm --prefix supervisor/web run build` failed because the worktree lacks `supervisor/web/index.html` for the Vite entry module.
-- Dependency implications:
-  - The dashboard can serve as a navigation/frame dependency for further UI work, but not yet as a reliable operational surface for evidence review, roadmap tracking, or session forensics.
-  - Stable downstream use depends on adding the missing web runtime/test dependencies and replacing placeholder panels with API-backed rendering.
-- Priority: P0.
-
-### Cross-cutting blockers
-- The inspected backend read surfaces still depend on injected arrays instead of authoritative replay/projection providers (`/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90/supervisor/src/api/routes/stages.ts`, `/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90/supervisor/src/api/routes/reviews.ts`), which keeps both API and dashboard modules from becoming stable dependencies.
-- Verification readiness is incomplete on the web side: `/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90/supervisor/web/package.json` does not include `jsdom`, so the required jsdom test command fails, and the absence of `/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90/supervisor/web/index.html` prevents a successful Vite build.
-- Operator-facing roadmap and session-detail views remain placeholder-only (`/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90/supervisor/web/src/components/StageAssessmentPanel.tsx`, `/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90/supervisor/web/src/components/EventTimeline.tsx`), so even where backend logic exists, the delivered evidence path is still too thin to support governance claims.
+### Key unlock chains
+- capability: Authoritative operator read surfaces
+  - depends on: Hardened event/domain contracts; durable event storage; broader projection/state rebuild; projection-backed API routes
+  - unlocks: Trustworthy CLI reads, live web dashboard data, and stronger milestone/governance reporting
+- capability: Auditable supervision decision loop
+  - depends on: Persisted decision inputs and outputs; broader orchestration wiring; projection support for review/approval/stage state
+  - unlocks: Real governance controls, operator-visible approval/review state, and safer automation boundaries
+- capability: Internally usable dashboard
+  - depends on: API read layer authority; replacement of stub client data; detail and roadmap pages rendering real session/stage/evidence content
+  - unlocks: Credible M3 internal-usability claims and more meaningful web verification evidence
+- capability: Delivery-governance confidence
+  - depends on: Backend and web verification gates staying green, plus removal of placeholder API/dashboard behavior that currently weakens the signal
+  - unlocks: Stronger stage-gate decisions, more accurate executive reporting, and safer dependence on milestone completion claims
