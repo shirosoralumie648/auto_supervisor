@@ -29,13 +29,19 @@
 
 ## Evidence baseline
 
-This assessment is grounded in:
+This assessment separates current main-repo implementation evidence from worktree-local evaluation context.
+
+### Current main-repo evidence
 - current `main` branch code under `supervisor/` and `supervisor/web/`
 - repository-level `README.md`, which currently describes the project at MVP level and lists `npm --prefix supervisor test` and `npm --prefix supervisor/web test` as the published verification commands
 - `docs/superpowers/specs/2026-04-05-multi-agent-supervisor-design.md`, which defines the intended multi-agent supervisor architecture, event model, decision services, and split CLI/web interfaces
 - `docs/superpowers/specs/2026-04-06-supervisor-milestone-implementation-design.md`, which defines milestone acceptance criteria for M1 through M4 and warns against treating scaffold breadth or demo data as completion evidence
 - `docs/superpowers/plans/2026-04-06-supervisor-milestone-delivery.md`, which records the milestone-task breakdown used to build the current first-party `supervisor/` implementation
 - recent merged commits on `main`, with recent visible history in this worktree anchored by the merged supervisor MVP scaffold
+
+### Worktree-local evaluation context
+- fresh verification runs and failure observations gathered in `/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90` for this report
+- the inspected file state in that execution worktree at commit `20c6465c48710ee1984578d5cd43e32a6e0086ef`, which is the concrete review snapshot used for the milestone, module, blocker, and roadmap judgments below
 
 ## Assessment rules
 
@@ -111,6 +117,21 @@ This assessment is grounded in:
   - Align M4 wording with the current internal-build posture until the delivered operator path and broader audit baseline both stabilize.
 
 ## Module maturity matrix
+
+### Module-to-milestone crosswalk
+
+| Module | Primary milestone ownership | Why |
+| --- | --- | --- |
+| Event and domain model | M1 | Defines the durable runtime vocabulary and storage/replay contract needed before higher-layer supervision work can be authoritative. |
+| Storage and database | M1 | Persists and reloads the event stream that the rest of the supervisor path depends on. |
+| Projection and state rebuild | M1 | Reconstructs authoritative runtime state and is the base dependency for later API, CLI, and dashboard reads. |
+| Adapters and runtime ingress | M1 | Establishes the concrete runtime entry seam needed for the initial end-to-end supervisor path. |
+| Supervision decision services | M2 | Introduces the review, approval, progress, and stage-decision logic layered on top of the core runtime. |
+| Orchestration | M2 | Connects runtime events to supervision actions and broader decision-loop behavior. |
+| API read layer | M3 | Turns replayed supervisor state into operator-facing reads that internal users can depend on. |
+| CLI layer | M3 | Exposes internal operator workflows on top of authoritative read surfaces. |
+| Web dashboard | M3 | Delivers the main internal operator UI once live supervisor data replaces placeholders. |
+| Verification and delivery governance | M4 | Adds the acceptance, reporting, and regression discipline used to judge delivery truthfully. |
 
 | Module | Status | Quality | Priority | Key dependencies | Notes |
 | --- | --- | --- | --- | --- | --- |
