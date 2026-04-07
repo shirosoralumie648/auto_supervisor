@@ -1,5 +1,33 @@
 # Supervisor Status Audit and Delivery Governance
 
+## Executive summary
+
+### Overall status
+- Overall conclusion: the repository now has a meaningful supervisor MVP baseline with real persistence, replay, decision-service, and operator-surface structure, but it remains in the transition from milestone-grade implementation to dependable internal system use.
+- The strongest evidence is in the backend path, where `npm --prefix supervisor test` passed with 9 test files and 40 tests and `npm --prefix supervisor run typecheck` passed in this execution worktree.
+- The current quality posture is mixed rather than uniformly green: the README still documents manual supervision judgment as the source of truth for milestone completion and review acceptance, `npm --prefix supervisor/web test -- --environment jsdom` currently fails because `jsdom` is not installed in this worktree environment, and `npm --prefix supervisor/web run build` currently fails because `supervisor/web` is missing the `index.html` entry expected by Vite.
+- Management implication: delivery is under control only if planning, acceptance, and weekly tracking continue to treat the project as an actively governed internal build rather than a release-ready product.
+
+### What is complete
+- The evidence baseline, milestone assessment, module maturity view, blocker analysis, and staged 2–3 month roadmap are now documented from the current repository state rather than from stale milestone assumptions.
+- The backend core shows real implemented capability across durable event storage, replay composition, decision-service logic, orchestration hooks, API structure, and testable CLI/dashboard seams.
+- A week-based staged roadmap now exists that keeps the mixed-resource assumption intact: one primary owner can execute the path, and one to two collaborators can accelerate separable workstreams without changing the default single-owner model.
+
+### What is still in progress
+- The project’s critical path to dependable internal usability is still in progress because operator-facing reads, supervision-state completeness, and dashboard readiness remain uneven across the inspected implementation.
+- Delivery governance is also still in progress in practical terms: backend verification is healthy, but the full regression gate published in `README.md` is not green in this worktree, so management should treat the current state as partially verified rather than stage-exit ready.
+- Collaboration remains lightweight and role-based by necessity; this supports current execution, but it also means review capacity and validation bandwidth can become delivery bottlenecks if not planned explicitly.
+
+### What has not started
+- A fully green, repeatable release-style gate for the actual delivered operator path has not yet been established in this worktree, because the current web test and web build baselines are failing.
+- A heavier-weight multi-person governance model has not started and should not be assumed; the current repo evidence supports lightweight role-based collaboration only.
+- Formal expansion work beyond the current critical path should also be treated as not started for planning purposes until the operator-facing read path and verification baseline are stabilized.
+
+### What must happen next
+- Keep Stage 0 and Stage 1 priorities intact: restore the truthful web verification baseline, keep operator-facing data paths authoritative, and avoid claiming stable internal usability until the documented regression gate is genuinely repeatable.
+- Use role-based ownership and lightweight weekly reviews to decide whether each stage is ready to advance, whether blockers require scope restraint, and whether collaborator help is needed on UI verification, regression hardening, or documentation alignment.
+- Treat the acceptance framework below as the management control layer: no stage should be called complete unless implementation evidence, verification evidence, and documented limitations all agree.
+
 ## Evidence baseline
 
 This assessment is grounded in:
@@ -243,3 +271,91 @@ This assessment is grounded in:
   - full verification gates are repeatable and green for the real delivered path
   - module and milestone reporting can describe the system as stable for internal use without contradicting README limitations
   - remaining work is primarily enhancement or expansion, not unresolved critical-path blockers
+
+## Governance, tracking, and quality controls
+
+### Ownership model
+- default owner: the primary repository owner remains accountable for sequencing, truthfulness of status reporting, and stage-advance decisions because the current execution model is still effectively single-owner.
+- stage ownership and collaboration model:
+  - Stage 0 ownership sits with the primary owner, with optional validation help from a collaborator restoring web verification or checking roadmap-to-repo alignment.
+  - Stage 1 ownership remains with the primary owner for projection-backed read-path decisions, with one collaborator optionally focused on API/provider integration and one collaborator optionally focused on dashboard or CLI rewiring after contracts stabilize.
+  - Stage 2 ownership remains with the primary owner for persisted decision-state and orchestration decisions, with collaborator help useful only on clearly separable projection-support and operator-surface rendering tasks.
+  - Stage 3 ownership remains with the primary owner for governance, documentation alignment, and quality-gate hardening, with collaborators helping on regression hardening or maintainability hotspots rather than redefining delivery priorities.
+- review-required areas:
+  - changes to event vocabulary, persisted decision semantics, or projection authority should receive explicit design review before being treated as settled foundations
+  - changes that alter milestone-completion criteria, README limitations, or acceptance claims should receive explicit review before being used in management reporting
+  - scope additions that would move effort away from the critical path should be reviewed before work starts, not after partial implementation lands
+- suggested support roles:
+  - design review support for event-contract, projection-authority, and orchestration-boundary decisions
+  - testing and validation support for web verification recovery, regression-gate hardening, and acceptance evidence review
+  - documentation/product-clarification support for keeping README limitations, milestone claims, and report language aligned with the actual system state
+
+### Weekly operating cadence
+- weekly review inputs:
+  - current stage objective and acceptance criteria from this report
+  - diff between planned work for the week and what actually landed
+  - fresh verification evidence from the documented regression gate
+  - open blockers, newly discovered scope, and any contradictions between README limitations and current claims
+- weekly decisions:
+  - whether the active stage remains the right focus or needs to be narrowed back to the blocker chain
+  - whether any workstream is safe to parallelize under the mixed-resource model
+  - whether a blocker requires explicit escalation, design review, or a reset of milestone-completion claims
+  - whether new scope should be deferred until the current stage exit gate is met
+- weekly outputs:
+  - a concise status note that states what changed, what remains blocked, and whether the stage is still on track
+  - updated stage confidence based on current evidence rather than optimistic projection
+  - a short next-step list anchored to the current stage acceptance criteria and blocker analysis
+
+### Stage gates
+- stage-entry gate:
+  - the incoming stage objective is still consistent with the blocker chain and current repo evidence
+  - the prerequisite outputs from the previous stage are either complete or explicitly waived with a documented reason
+  - the owner and any collaborator lanes are clear enough that work can proceed without inventing new coordination structure
+- stage-exit gate:
+  - the stage deliverables and acceptance criteria in this report are met with repo-visible evidence
+  - verification evidence is fresh enough to support the claim being made for that stage
+  - known limitations and manual-supervision boundaries remain documented where they still apply
+- blocker escalation:
+  - escalate when a blocker invalidates the current stage plan, keeps the documented regression gate from running, or forces a change to milestone truthfulness
+  - escalation should produce a concrete decision: narrow scope, add validation help, or delay the stage-advance claim until the blocker is resolved
+
+### Quality controls
+- required verification gate:
+  - published gate: `npm --prefix supervisor test`, `npm --prefix supervisor run typecheck`, `npm --prefix supervisor/web test -- --environment jsdom`, and `npm --prefix supervisor/web run build`
+  - current Task 5 evidence in this worktree: backend tests passed and backend typecheck passed; the web test command failed because `jsdom` is missing in the current environment, and the web build failed because `supervisor/web` is currently missing the `index.html` entry expected by Vite
+  - management use: treat the full gate as the target acceptance baseline, but treat current web-gate failures as active risks rather than silently assuming green status
+- definition of done for modules:
+  - the module is implemented on the real path rather than behind placeholder or sample-only behavior
+  - the module is validated by the relevant portion of the regression gate or by explicit targeted evidence when the full gate is not yet available
+  - downstream consumers can rely on the module without contradicting the README’s stated limitations
+- definition of done for milestones:
+  - the milestone’s key behaviors are connected end to end through the authoritative path, not just present as isolated functions or scaffold screens
+  - operator-visible surfaces and documentation tell the same story as the implementation evidence
+  - the milestone can be described as complete without relying on manual reinterpretation of failing or missing quality signals
+- documentation requirements:
+  - update README limitations, verification guidance, and milestone/report language whenever delivered behavior changes the practical operator baseline
+  - record unresolved acceptance gaps explicitly instead of hiding them behind broad completion language
+
+### Risk register
+| Risk | Trigger | Impact | Mitigation | Early warning |
+| --- | --- | --- | --- | --- |
+| Technical implementation risk | Projection, orchestration, or decision-state work exposes gaps between current milestone scaffolding and the intended end-to-end path | Delays Stage 1 or Stage 2 completion and can force rework across API, CLI, and dashboard layers | Keep work sequenced around the existing blocker chain and require evidence-backed stage reviews before broadening scope | New fixes repeatedly reopen adjacent modules or require contract changes in multiple layers |
+| Architecture drift risk | New work bypasses projection-backed authority, hardens placeholder contracts, or expands behavior without aligning to the current design/report baseline | The repo can appear to progress while moving farther from the intended supervision model | Require explicit review for event, projection, orchestration, and milestone-criteria changes before treating them as accepted foundations | UI or API work lands faster than the underlying authoritative state path matures |
+| Test insufficiency risk | Passing backend checks are used as a proxy for overall readiness while web verification remains broken or incomplete | Management and engineering can overstate stability and accept false stage exits | Keep the full regression gate visible in every weekly review and treat missing web-gate coverage as an open acceptance gap | Status updates mention test success but omit the current web-test or web-build failures |
+| Roadmap and goal drift risk | New enhancements, polish requests, or speculative governance work are added before the current stage acceptance criteria are met | Critical-path work slips and the roadmap stops reflecting the real highest-value sequence | Apply stage-entry and stage-exit gates strictly and defer non-critical scope until the active stage is truly complete | Weekly work includes items that do not map back to the stage objective or blocker chain |
+| Single-owner bandwidth risk | The primary owner must simultaneously drive core implementation, review, verification, and documentation updates | Throughput drops and important validation or reporting work gets deferred | Use collaborators only on separable validation, UI/API, or documentation tracks while keeping final sequencing with the primary owner | Review, test, or documentation work repeatedly slips behind implementation changes |
+| False-completion risk | Milestones or modules are labeled complete based on scaffold breadth, partial paths, or stale assumptions instead of current evidence | Management decisions become unreliable and later stages depend on unstable foundations | Use the report’s status classes strictly and require agreement between implementation evidence, verification evidence, and documented limitations | Completion language becomes stronger while README limitations or failing gates remain unchanged |
+
+### Test and acceptance framework
+- acceptance layers:
+  - management acceptance: the executive summary, roadmap stage, and current repo evidence all tell the same story without overstating readiness
+  - engineering acceptance: module status, blocker analysis, and stage deliverables are tied to concrete implementation paths rather than abstract intent
+  - verification acceptance: the documented regression gate is run where possible, and any failing or unavailable checks are named explicitly in the stage decision
+- stage-level acceptance use:
+  - Stage 0 should not exit until the baseline is truthful, the blocker chain is confirmed, and the web verification baseline is either restored or explicitly documented as an active constraint
+  - Stage 1 should not exit until authoritative read paths replace placeholder-first dependencies for the main internal operator surfaces
+  - Stage 2 should not exit until persisted supervision decisions and broader orchestration state are visible through the real operator path
+  - Stage 3 should not exit until verification discipline, documentation alignment, and maintainability controls support repeatable internal use without contradiction
+- acceptance discipline:
+  - if a command in the published gate fails, the report should carry that failure forward as a present constraint rather than converting it into a silent assumption
+  - if a milestone depends on manual supervision judgment, that boundary should remain explicit until the system evidence shows a tighter automated acceptance basis
