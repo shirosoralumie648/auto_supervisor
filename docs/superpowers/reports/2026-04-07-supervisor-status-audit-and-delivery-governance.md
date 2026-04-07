@@ -3,7 +3,7 @@
 ## Executive summary
 
 ### Overall status
-- The repository now has a meaningful supervisor MVP baseline with real persistence, replay, decision-service logic, and operator-surface structure, but it is still transitioning from milestone-grade implementation to dependable internal system use.
+- The repository now has a meaningful supervisor MVP baseline with real persistence, replay, deterministic decision-service logic, and early operator-surface structure, but operator-facing maturity still trails backend/runtime strength and the project remains in transition from milestone-grade implementation to dependable internal system use.
 - Backend verification is the strongest current signal in this execution worktree: `npm --prefix supervisor test` passed with 9 test files and 40 tests, and `npm --prefix supervisor run typecheck` passed.
 - The broader quality posture is still mixed because the published README commands stop at `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, while this report uses a stricter audit regression baseline that also checks backend typecheck and web build; under that broader audit baseline, the current worktree still has open web verification failures (`jsdom` missing for the web test environment and missing `supervisor/web/index.html` for the Vite build).
 - Management implication: treat the project as an actively governed internal build, not a release-ready product.
@@ -183,7 +183,7 @@ This assessment is grounded in:
 - Deliverables:
   - confirmed README-limited MVP framing for runtime, API, CLI, and web surfaces
   - an explicit short backlog anchored to the existing blocker chain around event contracts, projection-backed reads, and placeholder operator surfaces
-  - restored UI verification baseline, including resolution of the current web-build failure caused by missing `index.html` in `supervisor/web`
+  - restored web verification baseline for this report’s broader audit regression baseline, including resolution of the current web-build failure caused by missing `index.html` in `supervisor/web`
 - Default owner: primary repository owner working on the current supervisor baseline
 - Suggested collaborators:
   - contributor handling web build baseline restoration
@@ -352,7 +352,7 @@ This assessment is grounded in:
   - engineering acceptance: module status, blocker analysis, and stage deliverables are tied to concrete implementation paths rather than abstract intent
   - verification acceptance: the broader audit regression baseline used by this report is run where possible, and any failing or unavailable checks are named explicitly in the stage decision
 - stage-level acceptance use:
-  - Stage 0 should not exit until the baseline is truthful, the blocker chain is confirmed, and the web verification baseline is either restored or explicitly documented as an active constraint
+  - Stage 0 should not exit until the baseline is truthful, the blocker chain is confirmed, and the web verification baseline for this report’s broader audit regression baseline is either restored or explicitly documented as an active constraint
   - Stage 1 should not exit until authoritative read paths replace placeholder-first dependencies for the main internal operator surfaces
   - Stage 2 should not exit until persisted supervision decisions and broader orchestration state are visible through the real operator path
   - Stage 3 should not exit until verification discipline, documentation alignment, and maintainability controls support repeatable internal use without contradiction, and until governance wording no longer outruns delivered-path evidence
