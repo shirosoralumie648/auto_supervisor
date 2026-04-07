@@ -156,29 +156,29 @@ This assessment is grounded in:
 - Deliverables:
   - confirmed README-limited MVP framing for runtime, API, CLI, and web surfaces
   - an explicit short backlog anchored to the existing blocker chain around event contracts, projection-backed reads, and placeholder operator surfaces
-  - fresh confirmation of the current UI baseline, including the current web-build failure caused by missing `index.html` in `supervisor/web`
+  - restored UI verification baseline, including resolution of the current web-build failure caused by missing `index.html` in `supervisor/web`
 - Default owner: primary repository owner working on the current supervisor baseline
 - Suggested collaborators:
   - contributor handling web build baseline restoration
   - contributor validating the blocker-driven next-stage backlog against current code reality
 - Technical focus:
-  - preserve the current repo-grounded sequence: restore trustworthy UI verification first, then harden the event/domain contract, then connect API routes to projection-backed providers, then replace stubbed CLI and web reads
+  - preserve the current repo-grounded sequence: restore trustworthy UI verification first as baseline repair, then harden the event/domain contract, then connect API routes to projection-backed providers, then replace stubbed CLI and web reads
   - keep roadmap scope constrained to milestone cleanup rather than post-M4 expansion
 - Risks:
   - fixing UI or dashboard pages before API authority is established can lock in more placeholder contracts
-  - leaving the web build broken weakens every later stage gate that depends on dashboard delivery evidence
+  - treating verification-baseline repair as product-readiness completion would distort the true critical path
   - broadening scope during convergence can blur the distinction between milestone cleanup and later governance work
 - Acceptance criteria:
   - web build passes again from the current repo baseline
   - the next-stage backlog is explicitly anchored to the blocker chain already documented in this report
-  - event-contract hardening and projection-backed API integration are confirmed as the first critical-path items
+  - event-contract hardening and projection-backed API integration are confirmed as the first product critical-path items
 
 ### Stage 1 — Stable internal usability (2026-04-14 to 2026-05-04, Weeks 2–4)
 - Objective: Move the system from demonstrable milestone scaffolding to repeatable internal operator use across the core read surfaces.
 - Deliverables:
-  - projection-backed API reads for overview, session detail, stage, and review surfaces
-  - dashboard and CLI reads that no longer depend on injected arrays, sample sessions, or placeholder client responses
-  - session and stage projections expanded enough that operator-visible pages reflect real runtime and supervision state instead of isolated samples
+  - authoritative projection-backed API reads for overview, session detail, stage, and review surfaces
+  - operator-facing dashboard and CLI reads backed by real supervisor state rather than injected arrays, sample sessions, or placeholder client responses
+  - session and stage projections broad enough that core operator pages reflect real runtime and supervision state
 - Default owner: primary repository owner driving supervisor read-surface integration
 - Suggested collaborators:
   - contributor focused on replay/provider coverage for API responses
@@ -200,9 +200,9 @@ This assessment is grounded in:
 ### Stage 2 — Fully usable critical path (2026-05-05 to 2026-06-01, Weeks 5–8)
 - Objective: Close the most important end-to-end supervision gaps so the repo supports a genuinely usable runtime-to-operator critical path.
 - Deliverables:
-  - persisted and projected review, approval, progress, and stage-decision outcomes in the auditable event/replay path
-  - orchestration that extends beyond idle-triggered progress requests into the intended supervision workflow
-  - roadmap and detail surfaces that expose actionable state, blockers, and evidence instead of partial milestone shells
+  - persisted and replayed review, approval, progress, and stage-decision outcomes in the authoritative supervision path
+  - supervision orchestration extended beyond idle-triggered progress requests into the intended decision workflow
+  - roadmap and detail surfaces showing actionable state, blockers, and evidence from the real system path
 - Default owner: primary repository owner completing the supervision critical path
 - Suggested collaborators:
   - contributor expanding persisted decision and projection support
