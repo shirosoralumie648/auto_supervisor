@@ -40,17 +40,18 @@ This assessment is grounded in:
 ### M2 — Supervision decision loop
 - Status: In progress
 - Evidence:
-  - M2 service files exist with deterministic logic: `supervisor/src/services/spec-review-service.ts` returns pass/revise/block based on score and findings, `supervisor/src/services/approval-policy-service.ts` escalates low-confidence documents to `needs_human`, `supervisor/src/services/progress-reconciler.ts` checks claimed stage completion, and `supervisor/src/services/stage-completion-judge.ts` converts completion criteria plus evidence count into `in_progress`/`completed`/`blocked`.
-  - The currently inspected orchestrator does not yet implement the wider M2 loop described in the milestone plan: `supervisor/src/orchestrator/orchestrator.ts` handles only `session.idle` and does not emit approval or stage-assessment actions.
-  - `supervisor/src/projections/session-runtime.ts` does not carry M2 review or stage-decision state, so the inspected core runtime path does not yet expose those decisions through the same surfaces.
-  - The backend test run passed, which supports that the currently implemented decision helpers are at least covered by the present suite.
+  - The milestone plan defines M2 as the stage where supervision decisions are layered onto the event-driven core, including review, approval, progress reconciliation, stage assessment, orchestration wiring, and surfaced operator reads.
+  - The Task 2 evidence set still shows only a narrow integrated loop in the current implementation: `supervisor/src/orchestrator/orchestrator.ts` reacts to `session.idle` by emitting `agent.progress.requested`, which proves one supervision trigger exists but not the broader decision cycle promised by M2.
+  - `supervisor/src/projections/session-runtime.ts` rebuilds runtime state for session start and idle transitions only; it does not yet project review outcomes, approval state, progress reports, or stage assessments into the inspected read model.
+  - `supervisor/src/api/server.ts` still serves routes from injected arrays rather than projection-backed supervision state, `supervisor/web/src/api/client.ts` still returns stubbed empty data, and `supervisor/web/src/pages/OverviewPage.tsx` still renders a hard-coded sample session, so M2 decisions are not visible through the operator surfaces inspected for this task.
+  - Fresh verification evidence: `npm --prefix supervisor test` passed in this worktree with 9 test files and 40 tests passing.
 - Quality assessment:
-  - The decision services are implemented enough to count as meaningful progress, but the inspected integration path still looks modular rather than fully loop-closed.
-  - Because the orchestrator and read surfaces examined for this task do not yet show the full M2 feedback loop, later work should not assume the supervision loop is complete end-to-end.
+  - The current repo supports a minimal event-driven supervision trigger, so M2 is not untouched.
+  - But the allowed Task 2 evidence does not show an integrated review/approval/stage-decision loop flowing through projections, API, and UI, so this milestone cannot be judged complete from the inspected files.
 - Remaining gaps:
-  - Wire review, approval, and stage-assessment outputs through orchestration, not just isolated service helpers.
-  - Surface M2 decisions through the same backend and UI paths used for operator visibility.
-  - Verify that current tests are asserting integrated decision-loop behavior instead of only helper-level behavior.
+  - Extend orchestration beyond idle-triggered progress requests to the wider supervision decisions described in the milestone plan.
+  - Project those decisions into runtime/read models that backend routes can serve.
+  - Replace stubbed API and overview reads so operator-visible surfaces reflect real supervision state.
 
 ### M3 — Internal usability
 - Status: In progress
