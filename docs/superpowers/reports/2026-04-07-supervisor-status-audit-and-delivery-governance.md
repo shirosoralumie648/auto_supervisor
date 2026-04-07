@@ -41,13 +41,13 @@ This assessment is grounded in:
 - Status: In progress
 - Evidence:
   - The milestone plan defines M2 as the stage where supervision decisions are layered onto the event-driven core, including review, approval, progress reconciliation, stage assessment, orchestration wiring, and surfaced operator reads.
-  - The Task 2 evidence set still shows only a narrow integrated loop in the current implementation: `supervisor/src/orchestrator/orchestrator.ts` reacts to `session.idle` by emitting `agent.progress.requested`, which proves one supervision trigger exists but not the broader decision cycle promised by M2.
+  - The current implementation still shows only a narrow integrated loop: `supervisor/src/orchestrator/orchestrator.ts` reacts to `session.idle` by emitting `agent.progress.requested`, which proves one supervision trigger exists but not the broader decision cycle promised by M2.
   - `supervisor/src/projections/session-runtime.ts` rebuilds runtime state for session start and idle transitions only; it does not yet project review outcomes, approval state, progress reports, or stage assessments into the inspected read model.
-  - `supervisor/src/api/server.ts` still serves routes from injected arrays rather than projection-backed supervision state, `supervisor/web/src/api/client.ts` still returns stubbed empty data, and `supervisor/web/src/pages/OverviewPage.tsx` still renders a hard-coded sample session, so M2 decisions are not visible through the operator surfaces inspected for this task.
+  - `supervisor/src/api/server.ts` still serves routes from injected arrays rather than projection-backed supervision state, `supervisor/web/src/api/client.ts` still returns stubbed empty data, and `supervisor/web/src/pages/OverviewPage.tsx` still renders a hard-coded sample session, so the broader M2 supervision path is not yet demonstrated through the integrated API and operator surfaces inspected for this task.
   - Fresh verification evidence: `npm --prefix supervisor test` passed in this worktree with 9 test files and 40 tests passing.
 - Quality assessment:
   - The current repo supports a minimal event-driven supervision trigger, so M2 is not untouched.
-  - But the allowed Task 2 evidence does not show an integrated review/approval/stage-decision loop flowing through projections, API, and UI, so this milestone cannot be judged complete from the inspected files.
+  - But the inspected integrated path does not yet demonstrate review/approval/stage-decision flow through projections, API, and UI, so this milestone cannot be judged complete from the inspected files.
 - Remaining gaps:
   - Extend orchestration beyond idle-triggered progress requests to the wider supervision decisions described in the milestone plan.
   - Project those decisions into runtime/read models that backend routes can serve.
