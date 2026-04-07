@@ -5,7 +5,7 @@
 ### Overall status
 - The repository now has a meaningful supervisor MVP baseline with real persistence, replay, decision-service logic, and operator-surface structure, but it is still transitioning from milestone-grade implementation to dependable internal system use.
 - Backend verification is the strongest current signal in this execution worktree: `npm --prefix supervisor test` passed with 9 test files and 40 tests, and `npm --prefix supervisor run typecheck` passed.
-- The broader quality posture is still mixed because the published README commands stop at `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, while this report uses a stricter regression baseline that also checks backend typecheck and web build; under that broader gate, the current worktree still has open web verification failures (`jsdom` missing for the web test environment and missing `supervisor/web/index.html` for the Vite build).
+- The broader quality posture is still mixed because the published README commands stop at `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, while this report uses a stricter audit regression baseline that also checks backend typecheck and web build; under that broader audit baseline, the current worktree still has open web verification failures (`jsdom` missing for the web test environment and missing `supervisor/web/index.html` for the Vite build).
 - Management implication: treat the project as an actively governed internal build, not a release-ready product.
 
 ### What is complete
@@ -23,7 +23,7 @@
 - Formal expansion work beyond the current critical path should also be treated as not started for planning purposes until the operator-facing read path and verification baseline are stabilized.
 
 ### What must happen next
-- Keep Stage 0 and Stage 1 priorities intact: restore the truthful web verification baseline, keep operator-facing data paths authoritative, and avoid claiming stable internal usability until the broader regression baseline used in this report is genuinely repeatable.
+- Keep Stage 0 and Stage 1 priorities intact: restore the truthful web verification baseline, keep operator-facing data paths authoritative, and avoid claiming stable internal usability until the broader audit regression baseline used in this report is genuinely repeatable.
 - Use role-based ownership and lightweight weekly reviews to decide whether each stage is ready to advance, whether blockers require scope restraint, and whether collaborator help is needed on UI verification, regression hardening, or documentation alignment.
 - Treat the acceptance framework below as the management control layer: no stage should be called complete unless implementation evidence, verification evidence, and documented limitations all agree.
 
@@ -95,20 +95,20 @@ This assessment is grounded in:
   - Ensure API routes read from projection-backed providers so the UI reflects actual supervisor state.
   - Reconcile milestone claims with README limitations and document the real internal run path once those surfaces are live.
 
-### M4 — Quality and release readiness
-- Status: Implemented but not yet a stable dependency
+### M4 — Verification and delivery governance
+- Status: In progress
 - Evidence:
-  - The repository README publishes `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, which defines the currently documented verification baseline.
+  - The repository README publishes `npm --prefix supervisor test` and `npm --prefix supervisor/web test`, which defines the current README-published verification commands.
   - Fresh evidence gathered for this report in `/home/shirosora/code_storage/auto_supervisor/.claude/worktrees/agent-a114bf90`: `npm --prefix supervisor test` passed with 9 test files and 40 tests, and `npm --prefix supervisor run typecheck` passed.
-  - This report also evaluates a broader regression baseline beyond the published README commands by checking the web jsdom test invocation and the web build; in the current worktree those checks still fail because `jsdom` is missing and `supervisor/web/index.html` is absent for Vite.
-  - Current code reality still includes placeholder API/web surfaces in `supervisor/src/api/server.ts`, `supervisor/web/src/api/client.ts`, and `supervisor/web/src/pages/OverviewPage.tsx`, so passing backend tests alone does not demonstrate release readiness.
+  - This report also evaluates a broader audit regression baseline beyond the README-published commands by checking the web jsdom test invocation and the web build; in the current worktree those checks still fail because `jsdom` is missing and `supervisor/web/index.html` is absent for Vite.
+  - Current code reality still includes placeholder API/web surfaces in `supervisor/src/api/server.ts`, `supervisor/web/src/api/client.ts`, and `supervisor/web/src/pages/OverviewPage.tsx`, so the verification evidence supports governance visibility and discipline more than readiness for dependable internal use.
 - Quality assessment:
-  - A repeatable backend test suite and backend typecheck both exist and currently pass, which is real progress toward release discipline.
-  - However, release readiness is overstated if it depends on backend-only success while core user-facing surfaces remain stubbed and the broader regression baseline still fails, so this milestone should be treated as implemented quality scaffolding rather than a stable release signal.
+  - The repository now has real governance inputs: documented README-published commands, a broader audit baseline for this report, and fresh backend test plus typecheck evidence.
+  - But M4 should still be treated as in progress because the broader audit baseline is not yet green and the operator-facing path remains partially scaffolded, which keeps governance readiness ahead of delivered-path maturity.
 - Remaining gaps:
-  - Gather and keep fresh full-gate evidence across backend tests, typecheck, web tests, and web build before claiming release readiness.
-  - Remove placeholder UI/API behavior that would make a passing test suite a misleading readiness signal.
-  - Align milestone completion claims with the README’s MVP framing and current operator-surface limitations.
+  - Keep README-published commands and the broader audit regression baseline clearly separated in future reporting.
+  - Gather and keep fresh full-baseline evidence across backend tests, typecheck, web tests, and web build before claiming stronger governance readiness.
+  - Align M4 wording with the current internal-build posture until the delivered operator path and broader audit baseline both stabilize.
 
 ## Module maturity matrix
 
@@ -123,7 +123,7 @@ This assessment is grounded in:
 | API read layer | In progress | `supervisor/src/api/server.ts` still builds the Fastify server around injected `sessions`, `stages`, and `reviews` arrays, so the read layer exists structurally but is not yet shown as authoritative projection-backed reads in this worktree report scope. | P0 | Projection/state rebuild, stored supervisor data, route providers | This remains a key blocker for making downstream CLI and dashboard surfaces trustworthy. |
 | CLI layer | In progress | `supervisor/src/cli/main.ts` currently exposes only `formatSessions` through `createCli()`, which is a usable shell for formatting but not yet a richer operator-ready command surface. | P1 | API read layer or projection data providers, session formatting commands | The CLI exists as a minimal interface seam, but the report should treat it as early-stage internal tooling rather than a mature control surface. |
 | Web dashboard | In progress | `supervisor/web/src/api/client.ts` still returns stubbed overview/session/roadmap data, while `supervisor/web/src/pages/OverviewPage.tsx`, `SessionDetailPage.tsx`, and `RoadmapStatusPage.tsx` primarily mount sample or placeholder views validated by `supervisor/web/src/dashboard.test.tsx`. | P0 | API read layer, session/detail/roadmap components, verification gates | Preserve the already gathered evidence: the inspected dashboard path is test-covered as a scaffold, but it is not yet a live operator surface. |
-| Verification and delivery governance | In progress | Fresh evidence in this task is limited to `npm --prefix supervisor test` passing in this worktree, which supports an early verification baseline but not broader delivery-governance maturity. | P0 | Backend tests, truthful milestone/module reporting, alignment between recorded evidence and current implementation scope | Keep this row tied to observed verification evidence and current reporting discipline, not later-stage release or product-governance conclusions. |
+| Verification and delivery governance | In progress | README-published commands exist, and this report adds fresh backend test plus typecheck evidence under a broader audit regression baseline; that is useful governance evidence, but current web-gate failures and placeholder operator surfaces still keep the maturity signal partial. | P0 | README-published commands, broader audit regression baseline, truthful milestone/module reporting, alignment between recorded evidence and current implementation scope | Keep this row tied to observed evidence and reporting discipline; do not treat it as proof of release readiness while the broader audit baseline and delivered operator path remain incomplete. |
 
 ## Dependency and blocker analysis
 
@@ -319,13 +319,14 @@ This assessment is grounded in:
   - escalation should produce a concrete decision: narrow scope, add validation help, or delay the stage-advance claim until the blocker is resolved
 
 ### Quality controls
-- required verification gate:
-  - published gate: `npm --prefix supervisor test`, `npm --prefix supervisor run typecheck`, `npm --prefix supervisor/web test -- --environment jsdom`, and `npm --prefix supervisor/web run build`
+- verification baselines:
+  - README-published commands: `npm --prefix supervisor test` and `npm --prefix supervisor/web test`
+  - broader audit regression baseline used by this report: `npm --prefix supervisor test`, `npm --prefix supervisor run typecheck`, `npm --prefix supervisor/web test -- --environment jsdom`, and `npm --prefix supervisor/web run build`
   - current Task 5 evidence in this worktree: backend tests passed and backend typecheck passed; the web test command failed because `jsdom` is missing in the current environment, and the web build failed because `supervisor/web` is currently missing the `index.html` entry expected by Vite
-  - management use: treat the full gate as the target acceptance baseline, but treat current web-gate failures as active risks rather than silently assuming green status
+  - management use: treat the README-published commands as the documentation baseline, and treat the broader audit regression baseline as the stricter acceptance lens for this report; current web-gate failures remain active risks rather than silent assumptions
 - definition of done for modules:
   - the module is implemented on the real path rather than behind placeholder or sample-only behavior
-  - the module is validated by the relevant portion of the regression gate or by explicit targeted evidence when the full gate is not yet available
+  - the module is validated by the relevant portion of the broader audit regression baseline or by explicit targeted evidence when the full baseline is not yet available
   - downstream consumers can rely on the module without contradicting the README’s stated limitations
 - definition of done for milestones:
   - the milestone’s key behaviors are connected end to end through the authoritative path, not just present as isolated functions or scaffold screens
@@ -349,14 +350,14 @@ This assessment is grounded in:
 - acceptance layers:
   - management acceptance: the executive summary, roadmap stage, and current repo evidence all tell the same story without overstating readiness
   - engineering acceptance: module status, blocker analysis, and stage deliverables are tied to concrete implementation paths rather than abstract intent
-  - verification acceptance: the documented regression gate is run where possible, and any failing or unavailable checks are named explicitly in the stage decision
+  - verification acceptance: the broader audit regression baseline used by this report is run where possible, and any failing or unavailable checks are named explicitly in the stage decision
 - stage-level acceptance use:
   - Stage 0 should not exit until the baseline is truthful, the blocker chain is confirmed, and the web verification baseline is either restored or explicitly documented as an active constraint
   - Stage 1 should not exit until authoritative read paths replace placeholder-first dependencies for the main internal operator surfaces
   - Stage 2 should not exit until persisted supervision decisions and broader orchestration state are visible through the real operator path
-  - Stage 3 should not exit until verification discipline, documentation alignment, and maintainability controls support repeatable internal use without contradiction
+  - Stage 3 should not exit until verification discipline, documentation alignment, and maintainability controls support repeatable internal use without contradiction, and until governance wording no longer outruns delivered-path evidence
 - acceptance discipline:
-  - if a command in the published gate fails, the report should carry that failure forward as a present constraint rather than converting it into a silent assumption
+  - if a command in the README-published commands fails, or if a broader audit-baseline check used by this report fails, the report should carry that failure forward as a present constraint rather than converting it into a silent assumption
   - if a milestone depends on manual supervision judgment, that boundary should remain explicit until the system evidence shows a tighter automated acceptance basis
 
 ## How to use this document
